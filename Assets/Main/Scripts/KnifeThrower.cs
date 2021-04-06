@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class KnifeThrower : MonoBehaviour
@@ -7,9 +6,7 @@ public class KnifeThrower : MonoBehaviour
     public Vector2 ThrowDirection = Vector2.up;
     public float MinTimeToThrow = 0.5f;
 
-    [SerializeField]
-    private Knife _knifePrefab;
-    
+    private Knife _knifePrefab;    
     private Knife _preparedKnife = null;
     private Rigidbody2D _preparedKnifeRigidBody;
     private Collider2D _preparedKnifeCollider;
@@ -17,15 +14,9 @@ public class KnifeThrower : MonoBehaviour
     private void Start()
     {
         // Set knife prefab from database
+        _knifePrefab = KnivesData.Instance.CurrentKnifePrefab;
+        // Initialize
         PrepareNextKnife(_knifePrefab);
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyUp(KeyCode.T))
-        {
-            ThrowNextKnife();
-        }
     }
 
     public void PrepareNextKnife(Knife knifePrefab)
