@@ -1,15 +1,18 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class KnifeThrower : MonoBehaviour
 {
+    public UnityAction OnLogHit;
+    public UnityAction OnKnifeHit;
+    public UnityAction OnAppleHit;
+
     public Vector2 ThrowDirection = Vector2.up;
     public float MinTimeToThrow = 0.5f;
 
     private Knife _knifePrefab;    
     private Knife _preparedKnife = null;
-    private Rigidbody2D _preparedKnifeRigidBody;
-    private Collider2D _preparedKnifeCollider;
 
     private void Start()
     {
@@ -28,9 +31,10 @@ public class KnifeThrower : MonoBehaviour
         }
 
         _preparedKnife = Instantiate(knifePrefab, transform.position, Quaternion.identity);
-        _preparedKnifeRigidBody = _preparedKnife.GetComponent<Rigidbody2D>();
-        _preparedKnifeCollider = _preparedKnife.GetComponent<Collider2D>();
-        _preparedKnifeCollider.enabled = false;
+        _preparedKnife.DeactivatePhysics();
+        _preparedKnife.DeactivateCollider();
+
+        _preparedKnife.OnHit += OnGameObjectHit;
     }
 
     public void ThrowNextKnife()
@@ -42,8 +46,9 @@ public class KnifeThrower : MonoBehaviour
         }
 
         // Throw
-        _preparedKnifeCollider.enabled = true;
-        _preparedKnifeRigidBody.AddForce(ThrowDirection * _preparedKnife.Speed, ForceMode2D.Impulse);
+        _preparedKnife.ActivateCollider();
+        _preparedKnife.ActivatePhysics();
+        _preparedKnife.Throw(ThrowDirection);
 
         // Prepare new knife
         _preparedKnife = null;
@@ -54,5 +59,25 @@ public class KnifeThrower : MonoBehaviour
     {
         yield return new WaitForSeconds(waitTime);
         PrepareNextKnife(_knifePrefab);
+    }
+
+    public void OnGameObjectHit(GameObject hitObject)
+    {
+        if (hitObject.TryGetComponent(out LogEnemy log))
+        {
+            OnLogHit?.Invoke();
+        }
+        else if (hitObject.TryGetComponent(out Knife knife))
+        {
+            OnKnifeHit?.Invoke();
+        }
+        else if (hitObject.TryGetComponent(out Apple apple))
+        {
+            OnAppleHit?.Invoke();
+        }
+        else
+        {
+            Debug.LogWarning("Unknown object got hit!");
+        }
     }
 }
