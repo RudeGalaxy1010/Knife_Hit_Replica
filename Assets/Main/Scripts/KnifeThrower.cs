@@ -4,9 +4,9 @@ using UnityEngine.Events;
 
 public class KnifeThrower : MonoBehaviour
 {
-    public UnityAction OnLogHit;
-    public UnityAction OnKnifeHit;
-    public UnityAction OnAppleHit;
+    public UnityAction<LogEnemy> OnLogHit;
+    public UnityAction<Knife> OnKnifeHit;
+    public UnityAction<Apple> OnAppleHit;
 
     public Vector2 ThrowDirection = Vector2.up;
     public float MinTimeToThrow = 0.5f;
@@ -65,15 +65,15 @@ public class KnifeThrower : MonoBehaviour
     {
         if (hitObject.TryGetComponent(out LogEnemy log))
         {
-            OnLogHit?.Invoke();
+            OnLogHit?.Invoke(log);
         }
         else if (hitObject.TryGetComponent(out Knife knife))
         {
-            OnKnifeHit?.Invoke();
+            OnKnifeHit?.Invoke(knife);
         }
         else if (hitObject.TryGetComponent(out Apple apple))
         {
-            OnAppleHit?.Invoke();
+            OnAppleHit?.Invoke(apple);
         }
         else
         {
