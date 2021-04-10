@@ -15,6 +15,10 @@ public class KnivesData : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+        }
         Instance = this;
 
         // Load Data

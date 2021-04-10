@@ -6,11 +6,15 @@ public class PlayerData : MonoBehaviour
     public static PlayerData Instance;
 
     public int Score { get; private set; }
-
     public int BestScore { get; private set; }
+    public int PassedLeveles { get; private set; }
 
     private void Awake()
     {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+        }
         Instance = this;
 
         if (PlayerPrefs.HasKey(BEST_SCORE_SAVE_KEY))
@@ -22,26 +26,6 @@ public class PlayerData : MonoBehaviour
             BestScore = 0;
             PlayerPrefs.SetInt(BEST_SCORE_SAVE_KEY, BestScore);
         }
-
-        var knifeThrower = FindObjectOfType<KnifeThrower>();
-        knifeThrower.OnAppleHit += ProcessAppleHit;
-        knifeThrower.OnKnifeHit += ProcessKnifeHit;
-        knifeThrower.OnLogHit += ProcessLogHit;
-    }
-
-    public void ProcessAppleHit(Apple apple)
-    {
-        AddScorePoints(apple.ScorePoints);
-    }
-
-    public void ProcessKnifeHit(Knife knife)
-    {
-        Debug.Log("You're lose");
-    }
-
-    public void ProcessLogHit(LogEnemy log)
-    {
-
     }
 
     public void AddScorePoints(int scorePoints)
@@ -54,6 +38,17 @@ public class PlayerData : MonoBehaviour
                 BestScore = Score;
             }
         }
+    }
+
+    public void IncPassedLevels(int value)
+    {
+        if (value <= 0)
+        {
+            Debug.LogError("incorrect value");
+            return;
+        }
+
+        PassedLeveles += value;
     }
 
     private void OnApplicationQuit()
